@@ -87,3 +87,7 @@ C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\obj\Debug\net6.0
 C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\obj\Debug\net6.0\ref\authenticationAPI.dll
 C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\FluentEmail.Core.dll
 C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\FluentEmail.Smtp.dll
+C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\Scrutor.dll
+C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.dll
+C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll

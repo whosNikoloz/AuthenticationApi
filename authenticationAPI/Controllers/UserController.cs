@@ -12,6 +12,7 @@ using System;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authorization;
 
 namespace authenticationAPI.Controllers
 {
@@ -114,7 +115,9 @@ namespace authenticationAPI.Controllers
                 return BadRequest("User not verified.");
             }
 
-            return Ok($"Welcome back, {user.UserName}!");
+            //string token = CreateToken(user);
+
+            return Ok(user);
         }
 
         [HttpGet("verify")]
@@ -233,5 +236,30 @@ namespace authenticationAPI.Controllers
         {
             return Convert.ToHexString(RandomNumberGenerator.GetBytes(64));
         }
+
+
+        //private string CreateToken(User user)
+        //{
+        //    List<Claim> calims = new List<Claim>
+        //    {
+        //       new Claim(ClaimTypes.Name, user.UserName)
+        //    };
+
+        //    var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
+        //        _configuration.GetSection("AppSettings:Token").Value));
+
+        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+        //    var token = new JwtSecurityToken(
+        //        claims: calims,
+        //        expires: DateTime.Now.AddDays(1),
+        //        signingCredentials: creds);
+
+        //    var jewt = new JwtSecurityTokenHandler().WriteToken(token);
+
+        //    return string.Empty;
+        //}
+
+
     }
 }
