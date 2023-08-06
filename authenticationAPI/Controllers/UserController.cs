@@ -13,6 +13,9 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using Newtonsoft.Json.Linq;
+using authenticationAPI.Model.LoginRequest;
 
 namespace authenticationAPI.Controllers
 {
@@ -29,15 +32,16 @@ namespace authenticationAPI.Controllers
             _configuration = configuration;
             _context = context;
         }
+       
 
-        [HttpGet("Users")]
+        [HttpGet("Users"), Authorize(Roles = "admin")]
         public async Task<IActionResult> GetUsers()
         {
             return Ok(await _context.Users.ToListAsync());
         }
 
 
-        [HttpGet("UserName")]
+        [HttpGet("UserName"), Authorize]
         public async Task<IActionResult> GetUser(string username)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
@@ -95,7 +99,7 @@ namespace authenticationAPI.Controllers
 
 
 
-        [HttpPost("login")]
+        [HttpPost("loginWithEmail")]
         public async Task<IActionResult> Login(UserLoginRequest request)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
@@ -115,10 +119,148 @@ namespace authenticationAPI.Controllers
                 return BadRequest("User not verified.");
             }
 
-            //string token = CreateToken(user);
+            string jwttoken = CreateToken(user);
+
+            return Ok(new { User = user, Token = jwttoken });
+
+        }
+
+        [HttpPost("loginWithUserName")]
+        public async Task<IActionResult> LoginUserName(UserLoginUserNameRequest request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
+
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                return BadRequest("Wrong password.");
+            }
+
+            if (user.VerifiedAt == null)
+            {
+                return BadRequest("User not verified.");
+            }
+
+            string token = CreateToken(user);
 
             return Ok(user);
         }
+        [HttpPost("loginWithPhoneNumber")]
+        public async Task<IActionResult> LoginPhone(UserLoginPhoneRequest request)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
+
+            if (user == null)
+            {
+                return BadRequest("User not found.");
+            }
+
+            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                return BadRequest("Wrong password.");
+            }
+
+            if (user.VerifiedAt == null)
+            {
+                return BadRequest("User not verified.");
+            }
+
+            string token = CreateToken(user);
+
+            return Ok(user);
+        }
+
+        //Changess//
+        [HttpPost("Change-password"), Authorize]
+        public async Task<IActionResult> changepassword(User requestuser, string newpassword, string oldpassword)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == requestuser.Email);
+
+            if (user == null)
+            {
+                return BadRequest("user not found.");
+            }
+            if (!VerifyPasswordHash(oldpassword, requestuser.PasswordHash, requestuser.PasswordSalt))
+            {
+                return BadRequest("Wrong password.");
+            }
+
+            CreatePasswordHash(newpassword, out byte[] passwordHash, out byte[] passwordSalt);
+
+
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            user.PasswordResetToken = null;
+            user.ResetTokenExpires = null;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception occurred during SaveChangesAsync: " + ex.Message);
+            }
+
+
+            return Ok(requestuser);
+        }
+
+        [HttpPost("Change-usernameornumber"), Authorize]
+        public async Task<IActionResult> changeusername(User requestuser)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == requestuser.Email);
+
+            if (user == null)
+            {
+                return BadRequest("user not found.");
+            }
+
+            user.UserName = requestuser.UserName;
+            user.PhoneNumber = requestuser.PhoneNumber;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok("Successfully changed Username or number");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception occurred during SaveChangesAsync: " + ex.Message);
+                return StatusCode(500, "An error occurred while saving changes.");
+            }
+        }
+
+        [HttpPost("userimage"), Authorize]
+        public async Task<IActionResult> userimage(User imagerequest)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == imagerequest.Email);
+
+            if (user == null)
+            {
+                return BadRequest("user not found.");
+            }
+
+            user.Picture = imagerequest.Picture;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return Ok("Successfully changed Username or number");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception occurred during SaveChangesAsync: " + ex.Message);
+                return StatusCode(500, "An error occurred while saving changes.");
+            }
+        }
+
+
+
 
         [HttpGet("verify")]
         public async Task<IActionResult> Verify(string token)
@@ -138,7 +280,7 @@ namespace authenticationAPI.Controllers
 
 
         [HttpPost("Forgot-password")]
-        public async Task<IActionResult> FotgotPassword(string email)
+        public async Task<IActionResult> ForgotPassowrd(string email)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
@@ -182,11 +324,52 @@ namespace authenticationAPI.Controllers
 
 
 
-        
+
 
         private async Task SendVerificationEmail(string email, string confirmationLink)
         {
-            string messageBody = $"Click the link below to verify your email:<br/><a href=\"{confirmationLink}\">Verify</a>";
+            string messageBody = $@"
+            <h1>Account Verification</h1>
+            <p>Thank you for signing up with our service. To activate your account, please click the button below:</p>
+            <a href=""{confirmationLink}"" style=""background-color: #007BFF; color: white; padding: 14px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 4px; font-size: 16px; margin: 10px auto; display: block;"">Verify Account</a>
+            <p>If you are having trouble with the button, you can also click the link below:</p>
+            <a href=""{confirmationLink}"">Verify</a>
+            <img src=""https://static.vecteezy.com/system/resources/previews/008/132/083/original/green-tree-cartoon-isolated-on-white-background-illustration-of-green-tree-cartoon-free-vector.jpg"" alt=""Your Logo"" style=""display: block;width:400px;height:331px; margin: 20px auto;"">
+        ";
+
+            using (MailMessage message = new MailMessage("noreplynika@gmail.com", email))
+            {
+                message.Subject = "Email Verification";
+                message.Body = messageBody;
+                message.IsBodyHtml = true;
+
+                using (SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587))
+                {
+                    smtpClient.Credentials = new NetworkCredential("noreplynika@gmail.com", "cdqwvhmdwljietwq");
+                    smtpClient.EnableSsl = true;
+
+                    try
+                    {
+                        await smtpClient.SendMailAsync(message);
+                    }
+                    catch (Exception)
+                    {
+                        // Handle any exception that occurs during the email sending process
+                        // You can log the error or perform other error handling actions
+                    }
+                }
+            }
+        }
+        private async Task SendEmail(string email, string confirmationLink)
+        {
+            string messageBody = $@"
+            <h1>Reset Password</h1>
+            <p>Please click the button below to reset your password:</p>
+            <a href=""{confirmationLink}"" style=""background-color: #4CAF50; color: white; padding: 14px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 4px; font-size: 16px; margin: 10px auto; display: block;"">Reset Password</a>
+            <p>If you are having trouble with the button, you can also click the link below:</p>
+            <a href=""{confirmationLink}"">Reset Password</a>
+            <img src=""https://static.vecteezy.com/system/resources/previews/008/132/083/original/green-tree-cartoon-isolated-on-white-background-illustration-of-green-tree-cartoon-free-vector.jpg"" alt=""Your Logo"" style=""display: block;width:400px;height:311px; margin: 20px auto;"">
+             ";
 
             using (MailMessage message = new MailMessage("noreplynika@gmail.com", email))
             {
@@ -238,27 +421,28 @@ namespace authenticationAPI.Controllers
         }
 
 
-        //private string CreateToken(User user)
-        //{
-        //    List<Claim> calims = new List<Claim>
-        //    {
-        //       new Claim(ClaimTypes.Name, user.UserName)
-        //    };
+        private string CreateToken(User user)
+        {
+            List<Claim> calims = new List<Claim>
+            {
+               new Claim(ClaimTypes.Name, user.UserName),
+               new Claim(ClaimTypes.Role, user.Role)
+            };
 
-        //    var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
-        //        _configuration.GetSection("AppSettings:Token").Value));
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
+                _configuration.GetSection("AppSettings:Token").Value));
 
-        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-        //    var token = new JwtSecurityToken(
-        //        claims: calims,
-        //        expires: DateTime.Now.AddDays(1),
-        //        signingCredentials: creds);
+            var token = new JwtSecurityToken(
+                claims: calims,
+                expires: DateTime.Now.AddHours(1),
+                signingCredentials: creds);
 
-        //    var jewt = new JwtSecurityTokenHandler().WriteToken(token);
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-        //    return string.Empty;
-        //}
+            return jwt;
+        }
 
 
     }

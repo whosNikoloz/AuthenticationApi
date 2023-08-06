@@ -10,6 +10,10 @@ namespace authenticationAPI.Model
 
         public string? Email { get; set; } = string.Empty;
 
+        public string? PhoneNumber { get; set; }
+
+        public string? Picture { get; set; } = string.Empty;
+
         public byte[]? PasswordHash { get; set; } = new byte[32];
 
         public byte[]? PasswordSalt { get; set; } = new byte[32];
