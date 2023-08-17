@@ -94,3 +94,8 @@ C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0
 C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.Facebook.dll
 C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\Microsoft.AspNetCore.Authentication.Google.dll
 C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\System.Web.Cors.dll
+C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\System.Net.Http.Formatting.dll
+C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\System.Web.Http.dll
+C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\System.Web.Http.Cors.dll
+C:\Users\nikol\source\repos\authenticationAPI\authenticationAPI\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll

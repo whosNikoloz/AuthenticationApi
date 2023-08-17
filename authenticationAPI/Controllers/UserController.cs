@@ -16,11 +16,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication;
 using Newtonsoft.Json.Linq;
 using authenticationAPI.Model.LoginRequest;
+using System.Web.Http.Cors;
+
 
 namespace authenticationAPI.Controllers
 {
 
     [ApiController]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
@@ -293,7 +296,13 @@ namespace authenticationAPI.Controllers
             user.PasswordResetToken = CreateRandomToken();
             user.ResetTokenExpires = DateTime.Now.AddDays(1);
 
+            string returnUrl = "https://localhost:7070/Account/ResetPassword";
+
+            string verificationLink = $"{returnUrl}?token={user.PasswordResetToken}";
+
             await _context.SaveChangesAsync();
+
+            await SendEmail(email, verificationLink);
 
             return Ok($"You may reset your password now.");
         }
@@ -337,7 +346,7 @@ namespace authenticationAPI.Controllers
             <img src=""https://static.vecteezy.com/system/resources/previews/008/132/083/original/green-tree-cartoon-isolated-on-white-background-illustration-of-green-tree-cartoon-free-vector.jpg"" alt=""Your Logo"" style=""display: block;width:400px;height:331px; margin: 20px auto;"">
         ";
 
-            using (MailMessage message = new MailMessage("noreplynika@gmail.com", email))
+             using (MailMessage message = new MailMessage("noreplynika@gmail.com", email))
             {
                 message.Subject = "Email Verification";
                 message.Body = messageBody;
@@ -426,6 +435,8 @@ namespace authenticationAPI.Controllers
             List<Claim> calims = new List<Claim>
             {
                new Claim(ClaimTypes.Name, user.UserName),
+               new Claim("Picture", user.Picture),
+               new Claim(ClaimTypes.Email, user.Email),
                new Claim(ClaimTypes.Role, user.Role)
             };
 
