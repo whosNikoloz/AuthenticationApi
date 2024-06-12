@@ -1,22 +1,17 @@
 ﻿using authenticationAPI.Data;
-using authenticationAPI.Model;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
-using System.Threading.Tasks;
 using System.Net.Mail;
 using System.Net;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Authentication;
-using Newtonsoft.Json.Linq;
-using authenticationAPI.Model.LoginRequest;
 using System.Web.Http.Cors;
+using authenticationAPI.Model.User.LoginRequest;
+using authenticationAPI.Model.User.Password;
+using authenticationAPI.Model.User;
 
 
 namespace authenticationAPI.Controllers
@@ -30,108 +25,436 @@ namespace authenticationAPI.Controllers
         private readonly DataDbContext _context;
         private readonly IConfiguration _configuration;
 
-        public UserController(DataDbContext context,IConfiguration configuration)
+        public UserController(DataDbContext context, IConfiguration configuration)
         {
             _configuration = configuration;
             _context = context;
         }
-       
 
+
+        // მოიძიეთ ყველა მომხმარებლის სია.
+        // მოითხოვს ადმინისტრატორის პრივილეგიებს.
+        // GET api/Users
         [HttpGet("Users"), Authorize(Roles = "admin")]
         public async Task<IActionResult> GetUsers()
         {
             return Ok(await _context.Users.ToListAsync());
         }
 
-
-        [HttpGet("UserName"), Authorize]
-        public async Task<IActionResult> GetUser(string username)
+        // მიიღეთ კონკრეტული მომხმარებლის პროფილი მომხმარებლის სახელით.
+        // საჭიროებს ავთენტიფიკაციას.
+        // GET api/User/{username}
+        [HttpGet("User/{userid}"), Authorize]
+        public async Task<IActionResult> GetUser(int userid)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserId == userid);
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value; //JWT id ჩეკავს
+            var JWTRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value; //JWT Role
+
+            if (user == null)
+            {
+                return NotFound("UserNotFound");
+            }
+
+            if (user.OAuthProvider != null)
+            {
+                user.Email = user.Email + "(Oauth)";
+            }
+
+
+            string jwttoken = CreateToken(user);
+
+            var response = new
+            {
+                User = new
+                {
+                    userId = user.UserId,
+                    userName = user.UserName,
+                    firstName = user.FirstName,
+                    lastName = user.LastName,
+                    email = user.Email,
+                    phoneNumber = user.PhoneNumber,
+                    picture = user.Picture,
+                    joinedAt = user.VerifiedAt
+                },
+                Token = jwttoken
+            };
 
             if (user == null)
             {
                 return BadRequest("No User");
             }
-            return Ok(user);
+            return Ok(response);
         }
 
 
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register(UserRegisterRequest request)
+
+        [HttpPost("Auth/Login/check-email")]
+        public async Task<IActionResult> CheckEmailLogin(CheckEmailRequest request)
         {
-            if (_context.Users.Any(u => u.Email == request.Email) || _context.Users.Any(u => u.UserName == request.UserName))
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            bool emailExists = await _context.Users.AnyAsync(u => (u.Email == request.Email) && u.OAuthProvider == null);
+
+            if (!emailExists)
+            {
+                return Ok(new
+                {
+                    successful = false,
+                    error = "ასეთი მეილი არარსებობს"
+                });
+            }
+
+            return Ok(new
+            {
+                Successful = true
+            });
+        }
+
+        [HttpPost("Auth/Register/check-email")]
+        public async Task<IActionResult> CheckEmailReg(CheckEmailRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            bool emailExists = await _context.Users.AnyAsync(u => (u.Email == request.Email) && u.OAuthProvider == null);
+
+
+            if (emailExists)
+            {
+                return Ok(new
+                {
+                    successful = false,
+                    error = "ასეთი მეილი უკვე არსებობს"
+                });
+            }
+
+            return Ok(new
+            {
+                Successful = true
+            });
+        }
+
+        [HttpGet("Auth/Register/check-username/{username}")]
+        public async Task<IActionResult> CheckUserName(string username)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            bool usernameExists = await _context.Users.AnyAsync(u => u.UserName == username);
+
+            if (usernameExists)
+            {
+                return Ok(new
+                {
+                    successful = false,
+                    error = "სახელი დაკავებულია"
+                });
+            }
+
+            return Ok(new
+            {
+                Successful = true
+            });
+        }
+
+        // ახალი მომხმარებლის რეგისტრაცია.
+        // POST api/Auth/რეგისტრაცია
+        [HttpPost("Auth/Register")]
+        public async Task<IActionResult> RegisterUser(UserRegisterRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (_context.Users.Any(u => (u.Email == request.Email) && u.OAuthProvider == null) || _context.Users.Any(u => u.UserName == request.UserName))
             {
                 return BadRequest("User (Email or Username) already exists.");
             }
 
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
-            var user = new User
+            var user = new UserModel
             {
                 Email = request.Email,
                 UserName = request.UserName,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                OAuthProvider = null,
+                OAuthProviderId = null,
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 VerificationToken = CreateRandomToken()
             };
 
-            // Check if it's the first registered user
             if (!_context.Users.Any())
             {
                 user.Role = "admin"; // Assign "admin" role
-                user.VerifiedAt = DateTime.Now;
             }
             else
             {
                 user.Role = "user"; // Assign "user" role
             }
 
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            
+            string host = "192.168.1.56:45455";
 
-            string verificationLink = Url.Action("Verify", "User", new { token = user.VerificationToken }, Request.Scheme);
+            string verificationLink = Url.ActionLink("VerifyEmail", "User", new { token = user.VerificationToken }, Request.Scheme, host);
 
-            await SendVerificationEmail(user.Email, verificationLink);
+
+            await SendVerificationEmail(user.Email, user.UserName, verificationLink);
 
             return Ok("User successfully created. Verification email sent.");
         }
 
 
-
-        [HttpPost("loginWithEmail")]
-        public async Task<IActionResult> Login(UserLoginRequest request)
+        [HttpPost("Auth/RegisterOAuth2")]
+        public async Task<IActionResult> RegisterOAuthUser(OAuthUserRegisterRequest request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Check if a user with the same OAuthProvider and OAuthProviderId already exists
+            if (_context.Users.Any(u => u.OAuthProvider == request.oAuthProvider && u.OAuthProviderId == request.oAuthProviderId))
+            {
+                return BadRequest("OAuth2 User already exists.");
+            }
+
+            var (firstName, lastName) = ExtractNamesFromUsername(request.username);
+
+            // Generate a unique username based on firstName and lastName
+            var uniqueUsername = GenerateUniqueUsername(firstName, lastName);
+
+
+            // Create a new user record
+            var user = new UserModel
+            {
+                Email = request.email,
+                UserName = uniqueUsername,
+                FirstName = firstName,
+                LastName = lastName,
+                Picture = request.picture,
+                OAuthProvider = request.oAuthProvider,
+                OAuthProviderId = request.oAuthProviderId,
+                VerificationToken = CreateRandomToken()
+            };
+
+            if (!_context.Users.Any())
+            {
+                user.Role = "admin"; // Assign "admin" role
+
+            }
+            else
+            {
+                user.Role = "user"; // Assign "user" role
+            }
+
+            user.VerifiedAt = DateTime.Now;
+
+            // Save the new user to the database
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return Ok("OAuth2 User successfully registered.");
+        }
+
+        // Function to generate a unique username based on firstName and lastName
+        private string GenerateUniqueUsername(string firstName, string lastName)
+        {
+            var baseUsername = (firstName.Length > 0 ? firstName[0].ToString() : "") + (lastName.Length > 0 ? lastName : "");
+            var username = baseUsername;
+            var count = 1;
+
+            // Check if the username is already in use, and if so, append a number to make it unique
+            while (_context.Users.Any(u => u.UserName == username))
+            {
+                username = $"{baseUsername}{count}";
+                count++;
+            }
+
+            return username;
+        }
+
+        private (string, string) ExtractNamesFromUsername(string username)
+        {
+            // Split the username into parts based on spaces
+            var nameParts = username.Split(' ');
+
+            // Take the first part as the first name
+            var firstName = nameParts.Length > 0 ? nameParts[0] : "";
+
+            // Take the rest as the last name
+            var lastName = nameParts.Length > 1 ? string.Join(" ", nameParts.Skip(1)) : "";
+
+            return (firstName, lastName);
+        }
+
+        // ამოიღეთ მომხმარებელი ID-ით.
+        // მოითხოვს ადმინისტრატორის პრივილეგიებს.
+        // DELETE api/Auth/Remove/{userid}
+        [HttpDelete("Auth/Remove/{userid}"), Authorize(Roles = "admin")]
+        public async Task<IActionResult> RemoveUser(int userid)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userid);
+            if (user == null)
+            {
+                return BadRequest("use not Found");
+            }
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return Ok("user Rmeoved");
+        }
+
+
+        [HttpPost("Auth/OAuthEmail")]
+        public async Task<IActionResult> LoginOAuth2(OAuth2LoginRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.OAuthProvider == request.OAuthProvider && u.OAuthProviderId == request.OAuthProviderId); // Fix the comparison here
 
             if (user == null)
             {
                 return BadRequest("User not found.");
             }
+            user.Email = user.Email + "(Oauth)";
+
+            // Normally, OAuth2 authentication would have already occurred, and you'd have an access token
+            // and user information from the OAuth2 provider.
+
+            // Instead of checking a password, you can assume that if the user exists and reached this point,
+            // they have successfully authenticated through OAuth2.
+
+            // You can generate a JWT token or another type of authentication token for the user at this point.
+            string jwttoken = CreateToken(user);
+
+            var response = new
+            {
+                Token = jwttoken
+            };
+
+            return Ok(new
+            {
+                successful = true,
+                response
+            });
+        }
+
+
+
+        // შეამოწმებს თუ Oauth2 მომხმარებელი არსებობს.
+        // POST api/Auth/OAuth2Exist
+        [HttpPost("Auth/OAuth2Exist")]
+        public async Task<IActionResult> CheckeOatuh2Exist(CheckOauth2ExistsReqeust reqeust)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _context.Users
+    .FirstOrDefaultAsync(u => u.OAuthProvider == reqeust.OAuthProvider && u.OAuthProviderId == reqeust.OAuthProviderId);
+
+            if (user == null)
+            {
+                return BadRequest(false);
+            }
+            return Ok(true);
+        }
+
+        // შედით ელექტრონული ფოსტით და პაროლით.
+        // POST api/Auth/Email
+        [HttpPost("Auth/Email")]
+        public async Task<IActionResult> LoginWithEmail(UserLoginEmailRequest request)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == request.Email);
+
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
 
             if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
-                return BadRequest("Wrong password.");
+                return Ok(new
+                {
+                    successful = false,
+                    error = "Wrong Passwrod"
+                });
             }
 
-            if (user.VerifiedAt == null)
+            if (user.VerifiedAt == DateTime.MinValue)
             {
-                return BadRequest("User not verified.");
+                return Ok(new
+                {
+                    successful = false,
+                    error = "User Not Verified"
+                });
             }
 
             string jwttoken = CreateToken(user);
 
-            return Ok(new { User = user, Token = jwttoken });
+            var response = new
+            {
+                Token = jwttoken
+            };
+
+            return Ok(new
+            {
+                successful = true,
+                response
+            });
 
         }
 
-        [HttpPost("loginWithUserName")]
-        public async Task<IActionResult> LoginUserName(UserLoginUserNameRequest request)
+        // შედით მომხმარებლის სახელით და პაროლით.
+        // POST api/Auth/Username
+        [HttpPost("Auth/Username")]
+        public async Task<IActionResult> LoginWithUserName(UserLoginUserNameRequest request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.UserName == request.UserName);
 
             if (user == null)
             {
@@ -152,10 +475,20 @@ namespace authenticationAPI.Controllers
 
             return Ok(user);
         }
-        [HttpPost("loginWithPhoneNumber")]
-        public async Task<IActionResult> LoginPhone(UserLoginPhoneRequest request)
+
+        // შედით ტელეფონის ნომრით და პაროლით.
+        // POST api/Auth/Phone
+        [HttpPost("Auth/Phone")]
+        public async Task<IActionResult> LoginWithPhoneNumber(UserLoginPhoneRequest request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+
+            var user = await _context.Users
+                .FirstOrDefaultAsync(u => u.PhoneNumber == request.PhoneNumber);
 
             if (user == null)
             {
@@ -177,22 +510,93 @@ namespace authenticationAPI.Controllers
             return Ok(user);
         }
 
-        //Changess//
-        [HttpPost("Change-password"), Authorize]
-        public async Task<IActionResult> changepassword(User requestuser, string newpassword, string oldpassword)
+
+        // შეცვალეთ მომხმარებლის პაროლი.
+        // საჭიროებს ავთენტიფიკაციას.
+        // POST api/User/ChangeGeneral
+        [HttpPut("User/ChangeGeneral"), Authorize]
+        public async Task<IActionResult> ChangeGeneral(ChangeGeneralRequest request)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == requestuser.Email);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == request.UserId);
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value; //JWT id ჩეკავს
+            var JWTRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value; //JWT Role
+
+            if (user == null)
+            {
+                return NotFound("user not found.");
+            }
+            if (userId != user.UserId.ToString())
+            {
+                if (JWTRole != "admin")
+                {
+                    return BadRequest("Authorize invalid");
+                }
+            }
+
+            var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.UserName == request.UserName);
+            if (existingUser != user && existingUser != null)
+            {
+                return BadRequest("Username already exists in the database.");
+            }
+
+
+            user.UserName = request.UserName;
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.PhoneNumber = request.PhoneNumber;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception occurred during SaveChangesAsync: " + ex.Message);
+            }
+
+
+            return Ok("Successfully Changed");
+        }
+
+
+
+        // შეცვალეთ მომხმარებლის პაროლი.
+        // საჭიროებს ავთენტიფიკაციას.
+        // POST api/User/ChangePassword
+        [HttpPut("User/ChangePassword"), Authorize]
+        public async Task<IActionResult> ChangePassword(ChangePasswordRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == request.UserId);
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value; //JWT id ჩეკავს
+            var JWTRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value; //JWT Role
 
             if (user == null)
             {
                 return BadRequest("user not found.");
             }
-            if (!VerifyPasswordHash(oldpassword, requestuser.PasswordHash, requestuser.PasswordSalt))
+            if (userId != user.UserId.ToString())
+            {
+                if (JWTRole != "admin")
+                {
+                    return BadRequest("Authorize invalid");
+                }
+            }
+            if (!VerifyPasswordHash(request.OldPassword, user.PasswordHash, user.PasswordSalt))
             {
                 return BadRequest("Wrong password.");
             }
 
-            CreatePasswordHash(newpassword, out byte[] passwordHash, out byte[] passwordSalt);
+            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
 
             user.PasswordHash = passwordHash;
@@ -210,17 +614,35 @@ namespace authenticationAPI.Controllers
             }
 
 
-            return Ok(requestuser);
+            return Ok("Successfully Changed");
         }
 
-        [HttpPost("Change-usernameornumber"), Authorize]
-        public async Task<IActionResult> changeusername(User requestuser)
+
+        // შეცვალეთ მომხმარებლის სახელი ან ტელეფონის ნომერი.
+        // საჭიროებს ავთენტიფიკაციას.
+        // POST api/User/ChangeUsernameOrNumber
+        [HttpPost("User/ChangeUsernameOrNumber"), Authorize]
+        public async Task<IActionResult> ChangeUsernameOrNumber(UserModel requestuser)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value; //JWT id ჩეკავს
+            var JWTRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value; //JWT Role
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == requestuser.Email);
 
             if (user == null)
             {
                 return BadRequest("user not found.");
+            }
+            if (userId != user.UserId.ToString())
+            {
+                if (JWTRole != "admin")
+                {
+                    return BadRequest("Authorize invalid");
+                }
             }
 
             user.UserName = requestuser.UserName;
@@ -238,22 +660,42 @@ namespace authenticationAPI.Controllers
             }
         }
 
-        [HttpPost("userimage"), Authorize]
-        public async Task<IActionResult> userimage(User imagerequest)
+
+        // ატვირთეთ მომხმარებლის პროფილის სურათი.
+        // საჭიროებს ავთენტიფიკაციას.
+        // POST api/User/UploadImage
+        [HttpPost("User/UploadImage"), Authorize]
+        public async Task<IActionResult> UploadUserProfileImage(UploadImageRequest imagerequest)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == imagerequest.Email);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value; //JWT id ჩეკავს
+            var JWTRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value; //JWT Role
+
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == imagerequest.UserId);
 
             if (user == null)
             {
                 return BadRequest("user not found.");
             }
+            if (userId != user.UserId.ToString())
+            {
+                if (JWTRole != "admin")
+                {
+                    return BadRequest("Authorize invalid");
+                }
+            }
 
-            user.Picture = imagerequest.Picture;
+            user.Picture = imagerequest.PictureUrl;
 
             try
             {
                 await _context.SaveChangesAsync();
-                return Ok("Successfully changed Username or number");
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -264,10 +706,16 @@ namespace authenticationAPI.Controllers
 
 
 
-
-        [HttpGet("verify")]
-        public async Task<IActionResult> Verify(string token)
+        // გადაამოწმეთ მომხმარებლის ელ.ფოსტის მისამართი ნიშნის გამოყენებით.
+        // GET api/Verify/Email
+        [HttpGet("Verify/Email")]
+        public async Task<IActionResult> VerifyEmail(string token)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.VerificationToken == token);
 
             if (user == null)
@@ -278,13 +726,24 @@ namespace authenticationAPI.Controllers
             user.VerifiedAt = DateTime.Now;
             await _context.SaveChangesAsync();
 
-            return Ok("User verified successfully.");
+            string verificationSuccessUrl = "http://localhost:3000/user/auth/verification-successful";
+
+            // Redirect the user to the verification success URL
+            return Redirect(verificationSuccessUrl);
         }
 
 
-        [HttpPost("Forgot-password")]
-        public async Task<IActionResult> ForgotPassowrd(string email)
+
+        // მოითხოვეთ პაროლის აღდგენა ელექტრონული ფოსტით.
+        // POST api/User/ForgotPass
+        [HttpPost("User/ForgotPassword")]
+        public async Task<IActionResult> ForgotPasswordRequest(string email)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
@@ -296,21 +755,29 @@ namespace authenticationAPI.Controllers
             user.PasswordResetToken = CreateRandomToken();
             user.ResetTokenExpires = DateTime.Now.AddDays(1);
 
-            string returnUrl = "https://localhost:7070/Account/ResetPassword";
+            string returnUrl = "http://localhost:3000/ka/user/reset-password";
 
             string verificationLink = $"{returnUrl}?token={user.PasswordResetToken}";
 
             await _context.SaveChangesAsync();
 
-            await SendEmail(email, verificationLink);
+            await SendEmail(email, user.UserName, verificationLink);
 
             return Ok($"You may reset your password now.");
         }
 
 
-        [HttpPost("Reset-password")]
+
+        // გადააყენეთ მომხმარებლის პაროლი გადატვირთვის ნიშნის გამოყენებით.
+        // POST api/User/ResetPassword
+        [HttpPut("User/ResetPassword")]
         public async Task<IActionResult> ResetPassword(ResetPasswordRequest request)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == request.Token);
 
             if (user == null || user.ResetTokenExpires < DateTime.Now)
@@ -333,56 +800,181 @@ namespace authenticationAPI.Controllers
 
 
 
-
-
-        private async Task SendVerificationEmail(string email, string confirmationLink)
+        [HttpPost("User/ChangeEmailRequest/{email}"), Authorize]
+        public async Task<IActionResult> ChangeEmailRequest(string email)
         {
-            string messageBody = $@"
-            <h1>Account Verification</h1>
-            <p>Thank you for signing up with our service. To activate your account, please click the button below:</p>
-            <a href=""{confirmationLink}"" style=""background-color: #007BFF; color: white; padding: 14px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 4px; font-size: 16px; margin: 10px auto; display: block;"">Verify Account</a>
-            <p>If you are having trouble with the button, you can also click the link below:</p>
-            <a href=""{confirmationLink}"">Verify</a>
-            <img src=""https://static.vecteezy.com/system/resources/previews/008/132/083/original/green-tree-cartoon-isolated-on-white-background-illustration-of-green-tree-cartoon-free-vector.jpg"" alt=""Your Logo"" style=""display: block;width:400px;height:331px; margin: 20px auto;"">
-        ";
-
-             using (MailMessage message = new MailMessage("noreplynika@gmail.com", email))
+            if (!ModelState.IsValid)
             {
-                message.Subject = "Email Verification";
-                message.Body = messageBody;
-                message.IsBodyHtml = true;
-
-                using (SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587))
-                {
-                    smtpClient.Credentials = new NetworkCredential("noreplynika@gmail.com", "cdqwvhmdwljietwq");
-                    smtpClient.EnableSsl = true;
-
-                    try
-                    {
-                        await smtpClient.SendMailAsync(message);
-                    }
-                    catch (Exception)
-                    {
-                        // Handle any exception that occurs during the email sending process
-                        // You can log the error or perform other error handling actions
-                    }
-                }
+                return BadRequest(ModelState);
             }
+
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value; //JWT id ჩეკავს
+            var JWTRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value; //JWT Role
+
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId.ToString() == userId);
+
+            if (user == null)
+            {
+                return BadRequest("User Not Found");
+
+            }
+            //პირველად გაიგზავნოს ძველ მაილზე გაფრთხილება
+
+            await SendWarningEmail(user.Email, user.UserName);
+
+
+            if (_context.Users.Any(u => u.Email == email && u.OAuthProvider == null))
+            {
+                return BadRequest("ასეთი ანგარიში უკვე რეგისტრირებულია");
+            }
+
+
+            Random random = new Random();
+
+            int verificationCode = random.Next(1000, 10000);
+
+
+            await SendChangeEmailCode(email, user.UserName, verificationCode);
+
+
+            await _context.SaveChangesAsync();
+
+            return Ok(verificationCode);
         }
-        private async Task SendEmail(string email, string confirmationLink)
+
+
+
+        [HttpPost("User/ChangeEmail/{email}"), Authorize]
+        public async Task<IActionResult> ChangeEmail(string email)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value; //JWT id ჩეკავს
+            var JWTRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value; //JWT Role
+
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId.ToString() == userId);
+
+            if (user == null)
+            {
+                return BadRequest("User Not Found");
+            }
+
+
+            user.Email = email;
+
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
+
+        [HttpGet("User/ReLogin/{password}"), Authorize]
+        public async Task<IActionResult> ReLogin(string password)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value; //JWT id ჩეკავს
+            var JWTRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value; //JWT Role
+
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId.ToString() == userId);
+
+            if (user == null)
+            {
+                return BadRequest("User Not Found");
+            }
+
+
+            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+            {
+                return BadRequest("Wrong password.");
+            }
+
+
+            return Ok();
+        }
+
+
+
+
+        private async Task SendVerificationEmail(string email, string user, string confirmationLink)
+        {
+
             string messageBody = $@"
-            <h1>Reset Password</h1>
-            <p>Please click the button below to reset your password:</p>
-            <a href=""{confirmationLink}"" style=""background-color: #4CAF50; color: white; padding: 14px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 4px; font-size: 16px; margin: 10px auto; display: block;"">Reset Password</a>
-            <p>If you are having trouble with the button, you can also click the link below:</p>
-            <a href=""{confirmationLink}"">Reset Password</a>
-            <img src=""https://static.vecteezy.com/system/resources/previews/008/132/083/original/green-tree-cartoon-isolated-on-white-background-illustration-of-green-tree-cartoon-free-vector.jpg"" alt=""Your Logo"" style=""display: block;width:400px;height:311px; margin: 20px auto;"">
-             ";
+            <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"">
+            <html xmlns=""http://www.w3.org/1999/xhtml"">
+
+            <head>
+              <meta http-equiv=""Content-Type"" content=""text/html; charset=utf-8"">
+              <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+              <title>Verify your account</title>
+
+              <style>
+                .button {{
+                        display: inline-block;
+                        background-color: #007bff;
+                        color: white !important;
+                        border: none;
+                        border-radius: 20px;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        cursor: pointer;
+                    }}
+              </style>
+            </head>
+
+
+            <body style=""font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;"">
+              <table role=""presentation""
+                style=""width: 100%; border-collapse: collapse; border: 0px; border-spacing: 0px; font-family: Arial, Helvetica, sans-serif; background-color: rgb(239, 239, 239);"">
+                <tbody>
+                  <tr>
+                    <td align=""center"" style=""padding: 1rem 2rem; vertical-align: top; width: 100%;"">
+                      <table role=""presentation"" style=""max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;"">
+                        <tbody>
+                          <tr>
+                            <td style=""padding: 40px 0px 0px;"">
+                              <div style=""text-align: left;"">
+                                <div style=""padding-bottom: 20px;""><img src=""https://firebasestorage.googleapis.com/v0/b/eduspace-a81b5.appspot.com/o/EduSpaceLogo.png?alt=media&token=7b7dc8a5-05d8-4348-9b4c-c19913949c67"" alt=""Company"" style=""width: 56px;""></div>
+                              </div>
+                              <div style=""padding: 20px; background-color: rgb(255, 255, 255); border-radius: 20px;"">
+                                <div style=""color: rgb(0, 0, 0); text-align: center;"">
+                                  <h1 style=""margin: 1rem 0"">👋</h1>
+                                  <h1 style=""margin: 1rem 0"">მოგესალმებით, {user} !</h1>
+                                  <p style=""padding-bottom: 16px"">გმადლობთ, რომ დარეგისტრირდით EduSpace-ზე თქვენი ანგარიშის გასააქტიურებლად, გთხოვთ,დააჭიროთ ქვემოთ მოცემულ ღილაკს</p>
+                                  <a href={confirmationLink} class='button'>გააქტიურება</a>
+                                  <p style=""padding-bottom: 16px"">თუ ამ მისამართის დადასტურება არ მოგითხოვიათ, შეგიძლიათ იგნორირება გაუკეთოთ ამ ელფოსტას.</p>
+                                  <p style=""padding-bottom: 16px"">Thank you, EduSpace Team</p>
+                                </div>
+                              </div>
+                              <div style=""padding-top: 20px; color: rgb(153, 153, 153); text-align: center;"">
+                                <p style=""padding-bottom: 16px"">© 2023 Nikoloza. ყველა უფლება დაცულია</p>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </body>
+
+            </html>";
 
             using (MailMessage message = new MailMessage("noreplynika@gmail.com", email))
             {
-                message.Subject = "Email Verification";
+                message.Subject = "EduSpace.ge მომხმარებლის აქტივაცია";
                 message.Body = messageBody;
                 message.IsBodyHtml = true;
 
@@ -403,6 +995,298 @@ namespace authenticationAPI.Controllers
                 }
             }
         }
+        private async Task SendEmail(string email, string user, string confirmationLink)
+        {
+            string messageBody = $@"
+            <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"">
+            <html xmlns=""http://www.w3.org/1999/xhtml"">
+
+            <head>
+              <meta http-equiv=""Content-Type"" content=""text/html; charset=utf-8"">
+              <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+              <title>Verify your account</title>
+
+              <style>
+                .button {{
+                        display: inline-block;
+                        background-color: #007bff;
+                        color: white !important;
+                        border: none;
+                        border-radius: 20px;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        cursor: pointer;
+                    }}
+              </style>
+            </head>
+
+
+            <body style=""font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;"">
+              <table role=""presentation""
+                style=""width: 100%; border-collapse: collapse; border: 0px; border-spacing: 0px; font-family: Arial, Helvetica, sans-serif; background-color: rgb(239, 239, 239);"">
+                <tbody>
+                  <tr>
+                    <td align=""center"" style=""padding: 1rem 2rem; vertical-align: top; width: 100%;"">
+                      <table role=""presentation"" style=""max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;"">
+                        <tbody>
+                          <tr>
+                            <td style=""padding: 40px 0px 0px;"">
+                              <div style=""text-align: left;"">
+                                <div style=""padding-bottom: 20px;""><img src=""https://firebasestorage.googleapis.com/v0/b/eduspace-a81b5.appspot.com/o/EduSpaceLogo.png?alt=media&token=7b7dc8a5-05d8-4348-9b4c-c19913949c67"" alt=""Company"" style=""width: 56px;""></div>
+                              </div>
+                              <div style=""padding: 20px; background-color: rgb(255, 255, 255); border-radius: 20px;"">
+                                <div style=""color: rgb(0, 0, 0); text-align: center;"">
+                                  <h1 style=""margin: 1rem 0"">🔒</h1>
+                                  <h1 style=""margin: 1rem 0"">მოგესალმებით, {user}</h1>
+                                  <p style=""padding-bottom: 16px"">თქვენი EduSpace-ს ანგარიშიდან მოთხოვნილია პაროლის აღდგენა. ახალი პაროლის დასაყენებლად გთხოვთ დააჭიროთ პაროლის აღდგენის ღილაკს.</p>
+                                  <a href={confirmationLink} class='button'>პაროლის აღდგენა</a>
+                                  <p style=""padding-bottom: 16px"">თუ პაროლის გადაყენება არ მოგითხოვიათ, შეგიძლიათ უგულებელყოთ ეს ელფოსტა.</p>
+                                  <p style=""padding-bottom: 16px"">Thank you, EduSpace Team</p>
+                                </div>
+                              </div>
+                              <div style=""padding-top: 20px; color: rgb(153, 153, 153); text-align: center;"">
+                                <p style=""padding-bottom: 16px"">© 2023 Nikoloza. ყველა უფლება დაცულია</p>
+                              </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </body>
+
+            </html>";
+
+            using (MailMessage message = new MailMessage("noreplynika@gmail.com", email))
+            {
+                message.Subject = "EduSpace.ge ანგარიშის აღდგენა";
+                message.Body = messageBody;
+                message.IsBodyHtml = true;
+
+                using (SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587))
+                {
+                    smtpClient.Credentials = new NetworkCredential("noreplynika@gmail.com", "cdqwvhmdwljietwq");
+                    smtpClient.EnableSsl = true;
+
+                    try
+                    {
+                        await smtpClient.SendMailAsync(message);
+                    }
+                    catch (Exception)
+                    {
+                        // Handle any exception that occurs during the email sending process
+                        // You can log the error or perform other error handling actions
+                    }
+                }
+            }
+        }
+
+        private async Task SendWarningEmail(string email, string user)
+
+        {
+
+            string messageBody = $@"
+
+            <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"">
+            <html xmlns=""http://www.w3.org/1999/xhtml"">
+
+            <head>
+              <meta http-equiv=""Content-Type"" content=""text/html; charset=utf-8"">
+              <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+              <title>Verify your account</title>
+
+              <style>
+
+                .button {{
+                        display: inline-block;
+                        background-color: #007bff;
+                        color: white !important;
+                        border: none;
+                        border-radius: 20px;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        cursor: pointer;
+
+                    }}
+              </style>
+            </head>
+
+            <body style=""font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;"">
+              <table role=""presentation""
+                style=""width: 100%; border-collapse: collapse; border: 0px; border-spacing: 0px; font-family: Arial, Helvetica, sans-serif; background-color: rgb(239, 239, 239);"">
+                <tbody>
+                  <tr>
+                    <td align=""center"" style=""padding: 1rem 2rem; vertical-align: top; width: 100%;"">
+                      <table role=""presentation"" style=""max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;"">
+                        <tbody>
+                          <tr>
+                            <td style=""padding: 40px 0px 0px;"">
+                              <div style=""text-align: left;"">
+                                <div style=""padding-bottom: 20px;""><img src=""https://firebasestorage.googleapis.com/v0/b/eduspace-a81b5.appspot.com/o/EduSpaceLogo.png?alt=media&token=7b7dc8a5-05d8-4348-9b4c-c19913949c67"" alt=""Company"" style=""width: 56px;""></div>
+                              </div>
+                             <div style=""padding: 20px; background-color: rgb(255, 255, 255); border-radius: 20px;"">
+                              <div style=""color: rgb(0, 0, 0); text-align: center;"">
+                                <h1 style=""margin: 1rem 0"">⚠️</h1>
+                                <h1 style=""margin: 1rem 0"">მოგესალმებით, {user} !</h1>
+                                <p style=""padding-bottom: 16px"">ჩვენ შევამჩნიეთ, რომ თქვენ მოითხოვეთ ელფოსტის მისამართის შეცვლა, რომელიც დაკავშირებულია თქვენს EduSpace ანგარიშთან.</p>
+                                <p style=""padding-bottom: 16px"">თუ თქვენ არ მოითხოვეთ ეს ცვლილება, შეგიძლიათ უგულებელყოთ ეს ელფოსტა.</p>
+                                <p style=""padding-bottom: 16px"">Thank you, EduSpace Team</p>
+                              </div>
+                            </div>
+                            <div style=""padding-top: 20px; color: rgb(153, 153, 153); text-align: center;"">
+                              <p style=""padding-bottom: 16px"">© 2023 Nikoloza. All rights reserved.</p>
+                            </div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </body>
+            </html>";
+
+
+            using (MailMessage message = new MailMessage("noreplynika@gmail.com", email))
+
+            {
+                message.Subject = "EduSpace.ge მომხმარებლის აქტივაცია";
+                message.Body = messageBody;
+                message.IsBodyHtml = true;
+
+                using (SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587))
+
+                {
+
+                    smtpClient.Credentials = new NetworkCredential("noreplynika@gmail.com", "cdqwvhmdwljietwq");
+                    smtpClient.EnableSsl = true;
+
+                    try
+                    {
+                        await smtpClient.SendMailAsync(message);
+                    }
+                    catch (Exception)
+                    {
+                        // Handle any exception that occurs during the email sending process
+                        // You can log the error or perform other error handling actions
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
+        private async Task SendChangeEmailCode(string email, string user, int randomNumber)
+        {
+            string messageBody = $@"
+
+            <!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"">
+            <html xmlns=""http://www.w3.org/1999/xhtml"">
+
+            <head>
+              <meta http-equiv=""Content-Type"" content=""text/html; charset=utf-8"">
+              <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
+              <title>Verify your account</title>
+
+              <style>
+                .button {{
+                        display: inline-block;
+                        background-color: #007bff;
+                        color: white !important;
+                        border: none;
+                        border-radius: 20px;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        cursor: pointer;
+                    }}
+              </style>
+            </head>
+
+
+            <body style=""font-family: Helvetica, Arial, sans-serif; margin: 0px; padding: 0px; background-color: #ffffff;"">
+              <table role=""presentation""
+                style=""width: 100%; border-collapse: collapse; border: 0px; border-spacing: 0px; font-family: Arial, Helvetica, sans-serif; background-color: rgb(239, 239, 239);"">
+                <tbody>
+                  <tr>
+                    <td align=""center"" style=""padding: 1rem 2rem; vertical-align: top; width: 100%;"">
+                      <table role=""presentation"" style=""max-width: 600px; border-collapse: collapse; border: 0px; border-spacing: 0px; text-align: left;"">
+                        <tbody>
+                          <tr>
+                            <td style=""padding: 40px 0px 0px;"">
+                              <div style=""text-align: left;"">
+                                <div style=""padding-bottom: 20px;""><img src=""https://firebasestorage.googleapis.com/v0/b/eduspace-a81b5.appspot.com/o/EduSpaceLogo.png?alt=media&token=7b7dc8a5-05d8-4348-9b4c-c19913949c67"" alt=""Company"" style=""width: 56px;""></div>
+                              </div>
+
+                              <div style=""padding: 20px; background-color: rgb(255, 255, 255); border-radius: 20px;"">
+                              <div style=""color: rgb(0, 0, 0); text-align: center;"">
+                                <h1 style=""margin: 1rem 0"">👌</h1>
+                                <h1 style=""margin: 1rem 0"">მოგესალმებით, {user} !</h1>
+                                <p style=""padding-bottom: 16px"">გმადლობთ EduSpace-ზე თქვენი ელ.ფოსტის მისამართის განახლებისთვის. თქვენი ახალი ელფოსტის დასადასტურებლად, გთხოვთ, შეიყვანოთ შემდეგი კოდი:</p>
+                                <div  class='button'>{randomNumber}</div>
+                                <p style=""padding-bottom: 16px"">თუ თქვენ არ მოითხოვეთ ეს ცვლილება, შეგიძლიათ უგულებელყოთ ეს ელფოსტა</p>
+                                <p style=""padding-bottom: 16px"">Thank you, EduSpace Team</p>
+                              </div>
+                            </div>
+                            <div style=""padding-top: 20px; color: rgb(153, 153, 153); text-align: center;"">
+                              <p style=""padding-bottom: 16px"">© 2023 Nikoloza. All rights reserved.</p>
+                            </div>
+
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </body>
+
+            </html>";
+
+            using (MailMessage message = new MailMessage("noreplynika@gmail.com", email))
+
+            {
+
+                message.Subject = "EduSpace.ge ანგარიშის აღდგენა";
+
+                message.Body = messageBody;
+
+                message.IsBodyHtml = true;
+
+                using (SmtpClient smtpClient = new SmtpClient("smtp.gmail.com", 587))
+
+                {
+
+                    smtpClient.Credentials = new NetworkCredential("noreplynika@gmail.com", "cdqwvhmdwljietwq");
+                    smtpClient.EnableSsl = true;
+
+                    try
+
+                    {
+                        await smtpClient.SendMailAsync(message);
+                    }
+
+                    catch (Exception)
+
+                    {
+                        // Handle any exception that occurs during the email sending process
+                        // You can log the error or perform other error handling actions
+                    }
+
+                }
+
+            }
+
+        }
+
+
+
 
 
 
@@ -430,15 +1314,32 @@ namespace authenticationAPI.Controllers
         }
 
 
-        private string CreateToken(User user)
+        private string CreateToken(UserModel user)
         {
-            List<Claim> calims = new List<Claim>
+            List<Claim> claims;
+            try
             {
-               new Claim(ClaimTypes.Name, user.UserName),
-               new Claim("Picture", user.Picture),
-               new Claim(ClaimTypes.Email, user.Email),
-               new Claim(ClaimTypes.Role, user.Role)
+                claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Email, (user.Email != null ? user.Email : "")),
+                new Claim(ClaimTypes.Name, (user.FirstName != null ? user.FirstName : "")),
+                new Claim(ClaimTypes.Surname, (user.LastName != null ? user.LastName : "")),
+                new Claim(ClaimTypes.NameIdentifier, (user.UserName != null ? user.UserName : "")),
+                new Claim(ClaimTypes.MobilePhone, (user.PhoneNumber != null ? user.PhoneNumber : "") ),
+                new Claim("ProfilePicture", (user.Picture != null ? user.Picture : "")),
+                new Claim("joinedAt", user.VerifiedAt.ToString()),
+                new Claim("Oauth", (user.OAuthProvider == null ? "" : user.OAuthProvider)),
+                new Claim(ClaimTypes.Role, (user.Role != null ? user.Role : "")),
             };
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine($"An error occurred while creating claims: {ex.Message}");
+                // You can choose to throw the exception further if it's not recoverable
+                throw;
+            }
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
                 _configuration.GetSection("AppSettings:Token").Value));
@@ -446,7 +1347,7 @@ namespace authenticationAPI.Controllers
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
             var token = new JwtSecurityToken(
-                claims: calims,
+                claims: claims,
                 expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds);
 

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace authenticationAPI.Model.LoginRequest
+namespace authenticationAPI.Model.User.LoginRequest
 {
     public class UserLoginUserNameRequest
     {
@@ -8,6 +8,6 @@ namespace authenticationAPI.Model.LoginRequest
         public string UserName { get; set; } = string.Empty;
 
         [Required, DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string? Password { get; set; }
     }
 }

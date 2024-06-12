@@ -1,10 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace authenticationAPI.Model.LoginRequest
+namespace authenticationAPI.Model.User.LoginRequest
 {
     public class UserLoginEmailRequest
     {
-        [Required,EmailAddress]
+        [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;
 
         [Required, DataType(DataType.Password)]

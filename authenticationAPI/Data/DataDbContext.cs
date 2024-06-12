@@ -1,4 +1,5 @@
 ﻿using authenticationAPI.Model;
+using authenticationAPI.Model.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Options;
@@ -11,6 +12,6 @@ namespace authenticationAPI.Data
         {
         }
 
-        public DbSet<User> Users => Set<User>();
+        public DbSet<UserModel> Users { get; set; }
     }
 }

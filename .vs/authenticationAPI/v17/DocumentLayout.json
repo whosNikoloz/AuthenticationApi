@@ -1,0 +1,411 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\authenticationapi.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\authenticationapi.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\authenticationapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\authenticationapi.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\data\\datadbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\data\\datadbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\usermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\usermodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\loginrequest\\userloginusernamerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\loginrequest\\userloginusernamerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\loginrequest\\userloginphonerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\loginrequest\\userloginphonerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\loginrequest\\userloginemailrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\loginrequest\\userloginemailrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\loginrequest\\oauth2loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\loginrequest\\oauth2loginrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\password\\resetpasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\password\\resetpasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\password\\changepasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\password\\changepasswordrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\changegeneralrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\changegeneralrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\checkemailrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\checkemailrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\checkoauth2existsreqeust.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\checkoauth2existsreqeust.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\oauthuserregisterrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\oauthuserregisterrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\uploadimagerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\uploadimagerequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\model\\userregisterrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\model\\userregisterrequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|c:\\users\\nikoloz\\desktop\\auth\\authenticationapi\\authenticationapi\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{53AFCF9A-E677-4724-B12A-F29394E56A0D}|authenticationAPI\\authenticationAPI.csproj|solutionrelative:authenticationapi\\properties\\launchsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\UserLoginRequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:authenticationAPI\\Model\\UserLoginRequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\ChangePasswordRequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:authenticationAPI\\Model\\ChangePasswordRequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\ResetPasswordRequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:authenticationAPI\\Model\\ResetPasswordRequest.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\User.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:authenticationAPI\\Model\\User.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 189,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:2029881168:0:{83107a3e-496a-485e-b455-16ddb978e55e}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Controllers\\UserController.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Controllers\\UserController.cs",
+              "RelativeToolTip": "authenticationAPI\\Controllers\\UserController.cs",
+              "ViewState": "AQIAAAABAAAAAAAAAADwvxABAAArAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.334Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "OAuth2LoginRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\LoginRequest\\OAuth2LoginRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\LoginRequest\\OAuth2LoginRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\LoginRequest\\OAuth2LoginRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\LoginRequest\\OAuth2LoginRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T13:00:07.055Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "authenticationAPI",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\authenticationAPI.csproj",
+              "RelativeDocumentMoniker": "authenticationAPI\\authenticationAPI.csproj",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\authenticationAPI.csproj",
+              "RelativeToolTip": "authenticationAPI\\authenticationAPI.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-06-12T13:04:57.783Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "authenticationAPI\\appsettings.json",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\appsettings.json",
+              "RelativeToolTip": "authenticationAPI\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAnAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-06-12T12:48:27.332Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "ResetPasswordRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\Password\\ResetPasswordRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\Password\\ResetPasswordRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\Password\\ResetPasswordRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\Password\\ResetPasswordRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T13:00:02.813Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "ChangePasswordRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\Password\\ChangePasswordRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\Password\\ChangePasswordRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\Password\\ChangePasswordRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\Password\\ChangePasswordRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:59:58.735Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "authenticationAPI",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\authenticationAPI.csproj",
+              "RelativeDocumentMoniker": "authenticationAPI\\authenticationAPI.csproj",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\authenticationAPI.csproj",
+              "RelativeToolTip": "authenticationAPI\\authenticationAPI.csproj",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABkAAAAXAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2024-06-12T13:05:17.533Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "UserLoginEmailRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\LoginRequest\\UserLoginEmailRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\LoginRequest\\UserLoginEmailRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\LoginRequest\\UserLoginEmailRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\LoginRequest\\UserLoginEmailRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.321Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "UserLoginPhoneRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\LoginRequest\\UserLoginPhoneRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\LoginRequest\\UserLoginPhoneRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\LoginRequest\\UserLoginPhoneRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\LoginRequest\\UserLoginPhoneRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.318Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "UserLoginUserNameRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\LoginRequest\\UserLoginUserNameRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\LoginRequest\\UserLoginUserNameRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\LoginRequest\\UserLoginUserNameRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\LoginRequest\\UserLoginUserNameRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAkAAAAvAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.317Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "UserModel.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\UserModel.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\UserModel.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\UserModel.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\UserModel.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:59:14.803Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "DataDbContext.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Data\\DataDbContext.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Data\\DataDbContext.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Data\\DataDbContext.cs",
+              "RelativeToolTip": "authenticationAPI\\Data\\DataDbContext.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAABAAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.338Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "CheckEmailRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\CheckEmailRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\CheckEmailRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\CheckEmailRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\CheckEmailRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:58:58.399Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "CheckOauth2ExistsReqeust.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\CheckOauth2ExistsReqeust.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\CheckOauth2ExistsReqeust.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\CheckOauth2ExistsReqeust.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\CheckOauth2ExistsReqeust.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAgAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:59:02.983Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "OAuthUserRegisterRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\OAuthUserRegisterRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\OAuthUserRegisterRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\OAuthUserRegisterRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\OAuthUserRegisterRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAoAAAAFAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:59:08.724Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "UploadImageRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\UploadImageRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\UploadImageRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\UploadImageRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\UploadImageRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAeAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:59:11.563Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ChangeGeneralRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\ChangeGeneralRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\ChangeGeneralRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\ChangeGeneralRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\ChangeGeneralRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:58:49.333Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "UserRegisterRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\UserRegisterRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\UserRegisterRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\UserRegisterRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\UserRegisterRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.323Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "UserLoginRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\UserLoginRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\UserLoginRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\UserLoginRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\UserLoginRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAAhAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.325Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Program.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Program.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Program.cs",
+              "RelativeToolTip": "authenticationAPI\\Program.cs",
+              "ViewState": "AQIAAB8AAAAAAAAAAAAowDcAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.336Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "ChangePasswordRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\ChangePasswordRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\ChangePasswordRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\ChangePasswordRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\ChangePasswordRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAIAAAAbAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.326Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "ResetPasswordRequest.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\ResetPasswordRequest.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\ResetPasswordRequest.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\ResetPasswordRequest.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\ResetPasswordRequest.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAIAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.328Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "launchSettings.json",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Properties\\launchSettings.json",
+              "RelativeDocumentMoniker": "authenticationAPI\\Properties\\launchSettings.json",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Properties\\launchSettings.json",
+              "RelativeToolTip": "authenticationAPI\\Properties\\launchSettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAZAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-06-12T12:48:27.33Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\User.cs",
+              "RelativeDocumentMoniker": "authenticationAPI\\Model\\User.cs",
+              "ToolTip": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\Model\\User.cs",
+              "RelativeToolTip": "authenticationAPI\\Model\\User.cs",
+              "ViewState": "AQIAAAcAAAAAAAAAAAAgwBIAAABBAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-06-12T12:48:27.339Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

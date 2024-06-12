@@ -1,33 +1,36 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\nikol\\source\\repos\\authenticationAPI\\authenticationAPI\\authenticationAPI.csproj": {}
+    "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\authenticationAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\nikol\\source\\repos\\authenticationAPI\\authenticationAPI\\authenticationAPI.csproj": {
+    "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\authenticationAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\nikol\\source\\repos\\authenticationAPI\\authenticationAPI\\authenticationAPI.csproj",
+        "projectUniqueName": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\authenticationAPI.csproj",
         "projectName": "authenticationAPI",
-        "projectPath": "C:\\Users\\nikol\\source\\repos\\authenticationAPI\\authenticationAPI\\authenticationAPI.csproj",
-        "packagesPath": "C:\\Users\\nikol\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\nikol\\source\\repos\\authenticationAPI\\authenticationAPI\\obj\\",
+        "projectPath": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\authenticationAPI.csproj",
+        "packagesPath": "C:\\Users\\NIKOLOZ\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\NIKOLOZ\\Desktop\\Auth\\AuthenticationApi\\authenticationAPI\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\nikol\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\NIKOLOZ\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
-          "net6.0"
+          "net8.0"
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\sdk\\7.0.304\\Sdks\\Microsoft.NET.Sdk.Web\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
-          "net6.0": {
-            "targetAlias": "net6.0",
+          "net8.0": {
+            "targetAlias": "net8.0",
             "projectReferences": {}
           }
         },
@@ -35,11 +38,16 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
-        "net6.0": {
-          "targetAlias": "net6.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "FluentEmail.Smtp": {
               "target": "Package",
@@ -117,7 +125,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
