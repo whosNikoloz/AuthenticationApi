@@ -91,4 +91,3 @@ Welcome to the official documentation for the Authentication API! This guide pro
 
 ---
 
-Feel free to refer to this documentation for understanding and utilizing the various endpoints provided by the Authentication API. Happy coding!
